@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zypra - Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #58e2a4;
+            --secondary: #212529;
+            --accent: #58e2a4;
+            --text: #ffffff;
+            --dark: #151819;
+            --light-bg: #2c3035;
+            --danger: #ff5a5a;
+            --warning: #ffc107;
+            --success: #58e2a4;
+            --info: #17a2b8;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background-color: var(--secondary);
+            color: var(--text);
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            min-height: 100vh;
+            background-color: var(--dark);
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding: 20px 0;
+            transition: all 0.3s;
+            z-index: 100;
+        }
+        
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid #2c3035;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .sidebar-header img {
+            height: 40px;
+        }
+        
+        .close-sidebar {
+            display: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text);
+        }
+        
+        .sidebar-user {
+            padding: 20px;
+            border-bottom: 1px solid #2c3035;
+            margin-bottom: 10px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            overflow: hidden;
+        }
+        
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .user-name {
+            font-weight: 600;
+        }
+        
+        .user-tag {
+            font-size: 0.8rem;
+            color: #cccccc;
+        }
+        
+        .sidebar-menu {
+            padding: 0 10px;
+        }
+        
+        .menu-category {
+            font-size: 0.8rem;
+            color: #cccccc;
+            text-transform: uppercase;
+            margin: 20px 10px 10px;
+            letter-spacing: 1px;
+        }
+        
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            color: var(--text);
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 5px;
+            transition: all 0.3s;
+        }
+        
+        .menu-item:hover, .menu-item.active {
+            background-color: var(--primary);
+            color: var(--dark);
+        }
+        
+        .menu-item i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .logout-btn {
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            background-color: transparent;
+            border: none;
+            color: var(--text);
+            cursor: pointer;
+            border-radius: 8px;
+            width: 100%;
+            text-align: left;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .logout-btn:hover {
+            background-color: var(--danger);
+            color: var(--text);
+        }
+        
+        .logout-btn i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+        
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .menu-toggle {
+            display: none;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .page-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+        
+        .server-select {
+            position: relative;
+        }
+        
+        .server-dropdown {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background-color: var(--light-bg);
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            min-width: 200px;
+        }
+        
+        .server-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .server-name {
+            flex: 1;
+        }
+        
+        .server-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background-color: var(--light-bg);
+            border-radius: 8px;
+            margin-top: 5px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+        }
+        
+        .server-list.show {
+            display: block;
+        }
+        
+        .server-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .server-item:hover {
+            background-color: var(--secondary);
+        }
+        
+        /* Dashboard Content */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background-color: var(--light-bg);
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .stat-title {
+            font-size: 1rem;
+            color: #cccccc;
+        }
+        
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background-color: rgba(88, 226, 164, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .stat-description {
+            font-size: 0.8rem;
+            color: #cccccc;
+        }
+        
+        /* Server Configuration Section */
+        .content-section {
+            background-color: var(--light-bg);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #3a3f45;
+        }
+        
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px 15px;
+            background-color: var(--secondary);
+            border: 1px solid #3a3f45;
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 1rem;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .form-select {
+            width: 100%;
+            padding: 10px 15px;
+            background-color: var(--secondary);
+            border: 1px solid #3a3f45;
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 1rem;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23ffffff' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: calc(100% - 15px) center;
+            padding-right: 35px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: var(--dark);
+        }
+        
+        .btn-primary:hover {
+            background-color: #46c58e;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(88, 226, 164, 0.3);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            color: var(--text);
+            border: 2px solid var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--primary);
+            color: var(--dark);
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+            color: var(--text);
+        }
+        
+        .btn-danger:hover {
+            background-color: #ff3333;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 90, 90, 0.3);
+        }
+        
+        /* Switch Toggle */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #3a3f45;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .toggle-slider {
+            background-color: var(--primary);
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+        
+        .setting-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid #3a3f45;
+        }
+        
+        .setting-row:last-child {
+            border-bottom: none;
+        }
+        
+        .setting-info {
+            flex: 1;
+        }
+        
+        .setting-name {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .setting-description {
+            font-size: 0.8rem;
+            color: #cccccc;
+        }
+        
+        /* Roles & Permissions */
+        .role-card {
+            display: flex;
+            align-items: center;
+            background-color: var(--secondary);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .role-color {
+            width: 10px;
+            height: 30px;
+            border-radius: 4px;
+            margin-right: 15px;
+        }
+        
+        .role-name {
+            flex: 1;
+            font-weight: 500;
+        }
+        
+        /* Tab Navigation */
+        .tab-nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+        
+        .tab-button {
+            padding: 10px 20px;
+            background-color: var(--secondary);
+            border: none;
+            color: var(--text);
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        
+        .tab-button.active {
+            background-color: var(--primary);
+            color: var(--dark);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Channel Setup */
+        .channel-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .channel-item {
+            background-color: var(--secondary);
+            border-radius: 8px;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .channel-icon {
+            color: #cccccc;
+        }
+        
+        .channel-name {
+            flex: 1;
+            font-weight: 500;
+        }
+        
+        .action-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        /* OB Management */
+        .ob-card {
+            background-color: var(--secondary);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .ob-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #3a3f45;
+        }
+        
+        .ob-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .ob-members {
+            margin-top: 15px;
+        }
+        
+        .member-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            border-radius: 6px;
+            background-color: var(--light-bg);
+            margin-bottom: 10px;
+        }
+        
+        .member-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            overflow: hidden;
+            background-color: var(--secondary);
+        }
+        
+        .member-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .member-info {
+            flex: 1;
+        }
+        
+        .member-name {
+            font-weight: 500;
+        }
+        
+        .member-tag {
+            font-size: 0.8rem;
+            color: #cccccc;
+        }
+        
+        .member-role {
+            padding: 3px 8px;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            background-color: var(--primary);
+            color: var(--dark);
+            font-weight: 600;
+        }
+        
+        .member-owner {
+            background-color: #ffc107;
+        }
+        
+        .add-member {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            border-radius: 6px;
+            background-color: rgba(88, 226, 164, 0.1);
+            border: 1px dashed var(--primary);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .add-member:hover {
+            background-color: rgba(88, 226, 164, 0.2);
+        }
+        
+        /* Loader */
+        .loader {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        /* No Servers Message */
+        .no-servers {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .no-servers-icon {
+            font-size: 4rem;
+            color: #3a3f45;
+            margin-bottom: 20px;
+        }
+        
+        .no-servers h2 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .no-servers p {
+            color: #cccccc;
+            margin-bottom: 20px;
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+                box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
+            }
+            
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .menu-toggle {
+                display: block;
+            }
+            
+            .close-sidebar {
+                display: block;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .top-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .server-select {
+                width: 100%;
+            }
+            
+            .server-dropdown {
+                width: 100%;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tab-nav {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+            }
+        }
+        
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Loading Spinner -->
+    <div class="loader" id="loader" style="display: none;">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="https://res.cloudinary.com/dor9octmp/image/upload/v1746951211/Z_texte_sans_fond_fiw03s.png" alt="Zypra Logo">
+            <div class="close-sidebar" id="closeSidebar">
+                <i class="fas fa-times"></i>
+            </div>
+        </div>
+        
+        <div class="sidebar-user" id="userInfo">
+            <div class="user-info">
+                <div class="user-avatar">
+                    <img src="https://api.placeholder.com/40" alt="Avatar" id="userAvatar">
+                </div>
+                <div>
+                    <div class="user-name" id="userName">Chargement...</div>
+                    <div class="user-tag" id="userTag">#0000</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="sidebar-menu">
+            <div class="menu-category">Général</div>
+            <a href="#" class="menu-item active" data-page="overview">
+                <i class="fas fa-tachometer-alt"></i> Vue d'ensemble
+            </a>
+            <a href="#" class="menu-item" data-page="settings">
+                <i class="fas fa-cog"></i> Paramètres
+            </a>
+            
+            <div class="menu-category">Configuration</div>
+            <a href="#" class="menu-item" data-page="channels">
+                <i class="fas fa-hashtag"></i> Salons
+            </a>
+            <a href="#" class="menu-item" data-page="roles">
+                <i class="fas fa-users-cog"></i> Rôles
+            </a>
+            <a href="#" class="menu-item" data-page="verification">
+                <i class="fas fa-user-check"></i> Vérification MC
+            </a>
+            
+            <div class="menu-category">OneBlock</div>
+            <a href="#" class="menu-item" data-page="ob-management">
+                <i class="fas fa-server"></i> Gestion OB
+            </a>
+            <a href="#" class="menu-item" data-page="ob-members">
+                <i class="fas fa-user-friends"></i> Membres OB
+            </a>
+            
+            <div class="menu-category">Support</div>
+            <a href="#" class="menu-item" data-page="help">
+                <i class="fas fa-question-circle"></i> Aide
+            </a>
+            
+            <button class="logout-btn" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i> Déconnexion
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent">
+        <div class="top-bar">
+            <div class="left-section">
+                <div class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <h1 class="page-title">Tableau de bord</h1>
+            </div>
+            
+            <div class="server-select" id="serverSelectContainer">
+                <div class="server-dropdown" id="serverDropdown">
+                    <div class="server-icon" id="currentServerIcon">Z</div>
+                    <div class="server-name" id="currentServerName">Sélectionner un serveur</div>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                
+                <div class="server-list" id="serverList">
+                    <!-- Server list will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Content Pages -->
+        <div id="contentPages">
+            <!-- Overview Page -->
+            <div class="content-page active" id="overview-page">
+                <div class="dashboard-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-title">Membres sur le serveur</div>
+                            <div class="stat-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="memberCount">0</div>
+                        <div class="stat-description">Membres totaux sur le serveur</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-title">OneBlocks</div>
+                            <div class="stat-icon">
+                                <i class="fas fa-cubes"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="obCount">0</div>
+                        <div class="stat-description">OneBlocks configurés</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-title">Comptes vérifiés</div>
+                            <div class="stat-icon">
+                                <i class="fas fa-user-check"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="verifiedCount">0</div>
+                        <div class="stat-description">Membres avec un compte Minecraft vérifié</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-title">Commandes utilisées</div>
+                            <div class="stat-icon">
+                                <i class="fas fa-terminal"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="commandCount">0</div>
+                        <div class="stat-description">Commandes exécutées ce mois-ci</div>
+                    </div>
+                </div>
+                
+                <div class="content-section">
+                    <div class="section-header">
+                        <div class="section-title">Configuration rapide</div>
+                    </div>
+                    
+                    <div class="quick-setup">
+                        <p>Commencez rapidement avec votre serveur OneBlock en configurant les fonctionnalités essentielles.</p>
+                        <div class="action-buttons">
+                            <button class="btn btn-primary" id="quickSetupBtn">
+                                <i class="fas fa-magic"></i> Configuration automatique
+                            </button>
+                            <button class="btn btn-outline" id="guideBtn">
+                                <i class="fas fa-book"></i> Guide de démarrage
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="content-section">
+                    <div class="section-header">
+                        <div class="section-title">OneBlocks récents</div>
+                    </div>
+                    
+                    <div class="recent-obs" id="recentObs">
+                        <div class="no-servers">
+                            <div class="no-servers-icon">
+                                <i class="fas fa-cubes"></i>
+                            </div>
+                            <h2>Aucun OneBlock configuré</h2>
+                            <p>Commencez par configurer votre premier OneBlock</p>
+                            <button class="btn btn-primary" id="createObBtn">
+                                <i class="fas fa-plus-circle"></i> Créer un OneBlock
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Settings Page -->
+            <div class="content-page" id="settings-page">
+                <div class="content-section">
+                    <div class="section-header">
+                        <div class="section-title">Paramètres du bot</div>
+                    </div>
+                    
+                    <div class="tab-nav">
+                        <button class="tab-button active" data-tab="general-settings">Général</button>
+                        <button class="tab-button" data-tab="notifications-settings">Notifications</button>
+                        <button class="tab-button" data-tab="commands-settings">Commandes</button>
+                        <button class="tab-button" data-tab="logs-settings">Logs</button>
+                    </div>
+                    
+                    <div class="tab-content active" id="general-settings">
+                        <div class="setting-row">
+                            <div class="setting-info">
