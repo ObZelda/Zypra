@@ -155,7 +155,7 @@
         .hero-img img {
             max-width: 100%;
             height: auto;
-            animation: float 3s ease-in-out infinite;
+            /* Animation retirée */
         }
         
         .glow {
@@ -552,7 +552,6 @@
         
         /* Loading spinner */
         .loader {
-            display: none;
             position: fixed;
             top: 0;
             left: 0;
@@ -560,7 +559,7 @@
             height: 100%;
             background-color: rgba(0, 0, 0, 0.7);
             z-index: 2000;
-            display: flex;
+            display: none; /* Changer à "none" par défaut */
             align-items: center;
             justify-content: center;
         }
@@ -649,9 +648,15 @@
                     </a>
                 </div>
             </div>
+            <!-- Option 1: Garder le logo mais sans l'animation -->
             <div class="hero-img">
                 <img src="https://res.cloudinary.com/dor9octmp/image/upload/v1746951212/Logo_Zypra_vay3id.png" alt="Zypra Bot">
             </div>
+            
+            <!-- Option 2: Retirer complètement le logo -->
+            <!-- Si vous voulez retirer complètement le logo, remplacez le bloc hero-img ci-dessus par cette ligne vide:
+            <div class="hero-img"></div>
+            -->
         </div>
         <div class="glow glow-1"></div>
         <div class="glow glow-2"></div>
@@ -808,14 +813,17 @@
         
         // Vérifier si nous revenons d'une authentification Discord (fragment d'URL)
         function checkAuth() {
-            const fragment = new URLSearchParams(window.location.hash.slice(1));
-            const [accessToken, tokenType, state] = [
-                fragment.get('access_token'),
-                fragment.get('token_type'),
-                fragment.get('state')
-            ];
+            // Ne rien faire si pas de fragment dans l'URL
+            if (!window.location.hash) {
+                return;
+            }
             
-            // Vérifier si nous avons un token et si l'état correspond
+            const fragment = new URLSearchParams(window.location.hash.slice(1));
+            const accessToken = fragment.get('access_token');
+            const tokenType = fragment.get('token_type');
+            const state = fragment.get('state');
+            
+            // Vérifier si nous avons un token
             if (accessToken) {
                 const storedState = localStorage.getItem('discord_oauth_state');
                 
@@ -839,6 +847,9 @@
         
         // Ajouter des écouteurs d'événements aux boutons de connexion
         document.addEventListener('DOMContentLoaded', function() {
+            // Cacher le loader au chargement de la page
+            document.getElementById('loader').style.display = 'none';
+            
             // Vérifier l'authentification au chargement de la page
             checkAuth();
             
